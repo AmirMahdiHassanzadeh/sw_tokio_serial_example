@@ -1,4 +1,4 @@
-use tokio::{io::{AsyncReadExt, AsyncWriteExt}, time::sleep};
+use tokio::{io::{AsyncReadExt, AsyncWriteExt}};
 use tokio_serial::{SerialPortBuilderExt, SerialStream, DataBits, Parity, StopBits};
 use std::sync::Arc;
 
@@ -98,7 +98,6 @@ async fn async_serial_open(port_name: &str, baud: u32, timeout_ms: u64) -> Resul
 
   let port: SerialStream = tokio_serial::new(port_name, baud)
     .data_bits(DataBits::Eight)
-    .baud_rate(baud)
     .parity(Parity::None)
     .stop_bits(StopBits::One)
     .timeout(tokio::time::Duration::from_millis(timeout_ms))
