@@ -2,9 +2,11 @@ use tokio::{io::{AsyncReadExt, AsyncWriteExt}};
 use tokio_serial::{SerialPortBuilderExt, SerialStream, DataBits, Parity, StopBits};
 use std::sync::Arc;
 
+const MAX_SIZE: usize = 1024;
+
 struct SharedBuffer{
 
-    buff : Arc<tokio::sync::Mutex<[u8; 1024]>>,
+    buff : Arc<tokio::sync::Mutex<[u8; MAX_SIZE]>>,
     len : Arc<tokio::sync::Mutex<usize>>,
 }
 
@@ -12,7 +14,7 @@ impl  SharedBuffer {
     
     fn new() -> Self {
         SharedBuffer {
-            buff: Arc::new(tokio::sync::Mutex::new([0; 1024])),
+            buff: Arc::new(tokio::sync::Mutex::new([0; MAX_SIZE])),
             len: Arc::new(tokio::sync::Mutex::new(0)),
         }
     }
@@ -30,7 +32,7 @@ async fn main()-> Result<(),Box<dyn std::error::Error>> {
 
     let sendr_task = async {
             
-        let mem: Arc<tokio::sync::Mutex<[u8; 1024]>> = Arc::clone(&memory.buff);
+        let mem: Arc<tokio::sync::Mutex<[u8; MAX_SIZE]>> = Arc::clone(&memory.buff);
         let len: Arc<tokio::sync::Mutex<usize>> = Arc::clone(&memory.len);
         loop {
 
@@ -45,9 +47,9 @@ async fn main()-> Result<(),Box<dyn std::error::Error>> {
 
     let reciver_task = async {
 
-        let mem: Arc<tokio::sync::Mutex<[u8; 1024]>> = Arc::clone(&memory.buff);
+        let mem: Arc<tokio::sync::Mutex<[u8; MAX_SIZE]>> = Arc::clone(&memory.buff);
         let len: Arc<tokio::sync::Mutex<usize>> = Arc::clone(&memory.len);
-        let mut buff: [u8; 1024] = [0; 1024];
+        let mut buff: [u8; MAX_SIZE] = [0; MAX_SIZE];
         loop {
             
             let n  = {
